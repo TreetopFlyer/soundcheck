@@ -1,0 +1,14 @@
+.Slider
+{
+    position:relative;
+    height:50px;
+    background:#eee;
+}
+.Slider .Bar
+{
+    position:absolute;
+    top:0;
+    left:0;
+    height:100%;
+    background:#000;
+}

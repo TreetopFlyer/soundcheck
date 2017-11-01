@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="UTF-8">
+
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-cookies.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js"></script>
+        <script src="ngDrag.js"></script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div ng-app="App" ng-controller="Controller" ng-cloak>
+            <div class="Slider Interactive" ng-drag ng-drag-handler="MouseDrag" ng-drag-h-max="IterationsMax">
+                <div class="Bar" style="width:{{Lerp.Get(0, Iterations, IterationsMax)*100;}}%;"></div>
+            </div>
+            <span>{{Iterations}}</span>
+        </div>
+
+
+<script>
+
+    var Tone = {};
+    Tone.Context = new (window.AudioContext || window.webkitAudioContext)();
+
+    Tone.Time = {
+        Timer:0,
+        Counter:0,
+        Update: function()
+        {
+            switch(Tone.Time.Counter)
+            {
+                case 0:
+                    Tone.GainBeep.gain.value = 1;
+                    break;
+                case 1:
+                    Tone.GainBeep.gain.value = 0;
+                    break;
+                default:
+                    Tone.Time.Counter = -1;
+            }
+            Tone.Time.Counter++;
+        },
+        Start: function()
+        {
+            Tone.Time.Timer = setInterval(Tone.Time.Update, 150);
+        },
+        Stop: function()
+        {
+            clearInterval(Tone.Time.Timer);
+        }
+    };
+
+    Tone.GainBeep = Tone.Context.createGain();
+    Tone.GainBeep.gain.value = 0;
+    Tone.GainDB = Tone.Context.createGain();
+    Tone.GainDB.gain.value = 1;
+    Tone.Panner = Tone.Context.createStereoPanner();
+    Tone.Panner.pan.value = 0;
+    Tone.Oscillator = Tone.Context.createOscillator();
+    Tone.Oscillator.frequency.value = 250;
+    Tone.Oscillator.start();
+
+    Tone.Oscillator.connect(Tone.GainBeep);
+    Tone.GainBeep.connect(Tone.Panner);
+    Tone.Panner.connect(Tone.Context.destination);
+
+    //Tone.Time.Start();
+
+</script>
+
+        <script>
+            angular
+            .module("App", ["ngDrag"])
+            .controller("Controller", ["$scope", "Lerp", function($scope, Lerp)
+            {
+                $scope.Lerp = Lerp;
+                $scope.Iterations = 5;
+                $scope.IterationsMax = 50;
+                $scope.MouseDrag = function(){
+                    $scope.Iterations = Math.floor($scope.Iterations);
+                };
+            }]);
+        </script>
+    </body>
+</html>
