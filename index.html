@@ -13,13 +13,26 @@
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
+
         <div ng-app="App" ng-controller="Controller" ng-cloak>
-            <div class="Slider Interactive" ng-drag ng-drag-handler="MouseDrag">
-                <div class="Bar" style="width:{{Volume.value}}%;"></div>
+
+            <div class="Slider Interactive"
+            ng-repeat=""
+            ng-drag
+            ng-drag-move="MouseDrag"
+            ng-drag-start="MouseStart"
+            ng-drag-stop="MouseStop">
+                <div class="Bar" style="width:{{Volume.value*100}}%;"></div>
+            </div>
+
+            <div class="Slider Interactive" ng-drag ng-drag-move="MouseDrag" ng-drag-start="MouseStart" ng-drag-stop="MouseStop">
+                <div class="Bar" style="width:{{Volume.value*100}}%;"></div>
+            </div>
+            <div class="Slider Interactive" ng-drag ng-drag-move="MouseDrag" ng-drag-start="MouseStart" ng-drag-stop="MouseStop">
+                <div class="Bar" style="width:{{Volume.value*100}}%;"></div>
             </div>
             <span>{{Iterations}}</span>
         </div>
-
 
 <script>
 
@@ -44,13 +57,20 @@
             }
             Tone.Time.Counter++;
         },
+        Reset: function()
+        {
+            Tone.GainBeep.gain.value = 0;
+            Tone.Time.Counter = 0;
+        },
         Start: function()
         {
+            Tone.Time.Reset();
             Tone.Time.Timer = setInterval(Tone.Time.Update, 120);
         },
         Stop: function()
         {
             clearInterval(Tone.Time.Timer);
+            Tone.Time.Reset();
         }
     };
 
@@ -69,8 +89,6 @@
     Tone.GainBeep.connect(Tone.Panner);
     Tone.Panner.connect(Tone.Context.destination);
 
-    Tone.Time.Start();
-
 </script>
 
         <script>
@@ -78,11 +96,32 @@
             .module("App", ["ngDrag"])
             .controller("Controller", ["$scope", "Lerp", function($scope, Lerp)
             {
+
+                $scope.Tests = [];
+                $scope.Tests.push({
+                    Frequency:4000,
+                    Pan:1,
+                    Db:0.5
+                });
+                $scope.Tests.push({
+                    Frequency:250,
+                    Pan:-1,
+                    Db:0.5
+                });
+
                 $scope.Lerp = Lerp;
                 $scope.Volume = Tone.GainDB.gain;
                 $scope.MouseDrag = function(inPos)
                 {
                     $scope.Volume.value = inPos.x;
+                };
+                $scope.MouseStart = function()
+                {
+                    Tone.Time.Start();
+                };
+                $scope.MouseStop = function()
+                {
+                    Tone.Time.Stop();
                 };
             }]);
         </script>

@@ -38,7 +38,9 @@ angular.module("ngDrag", [])
 
         var horizontal = $parse(inAttributes.ngDragH);
         var vertical = $parse(inAttributes.ngDragV);
-        var handler = $parse(inAttributes.ngDragHandler)(inScope);
+        var handler = $parse(inAttributes.ngDragMove)(inScope);
+        var handlerStart = $parse(inAttributes.ngDragStart)(inScope);
+        var handlerStop = $parse(inAttributes.ngDragStop)(inScope);
 
         var linker = {};
         linker.element = inElement;
@@ -46,11 +48,13 @@ angular.module("ngDrag", [])
         {
             //coords of AABB within browser window
             var rect = inElement[0].getBoundingClientRect();
+            var locX = $event.clientX || $event.touches[0].clientX;
+            var locY = $event.clientX || $event.touches[0].clientY;
 
             //$event.client is the coords of the mouse within the browser window
             var mouseRect = {
-                x:Lerp.Clip(0, $event.clientX - rect.left, rect.width),
-                y:Lerp.Clip(0, $event.clientY - rect.top, rect.height)
+                x:Lerp.Clip(0, locX - rect.left, rect.width),
+                y:Lerp.Clip(0, locY - rect.top, rect.height)
             };
 
             var mouseRelative = {
@@ -78,16 +82,30 @@ angular.module("ngDrag", [])
             $event.preventDefault();
             $document.bind("mousemove", linker.handlerMove);
             $document.bind("mouseup", linker.handlerUp);
+
+            $document.bind("touchmove", linker.handlerMove);
+            $document.bind("touchend", linker.handlerUp);
+
             linker.handlerMove($event);
+
+            if(handlerStart)  
+                handlerStart($event);
         };
 
         linker.handlerUp = function($event)
         {
             $document.unbind("mousemove", linker.handlerMove);
             $document.unbind("mouseup", linker.handlerUp);
+
+            $document.unbind("touchmove", linker.handlerMove);
+            $document.unbind("touchend", linker.handlerUp);
+
+            if(handlerStop)  
+                handlerStop($event);
         };
 
         inElement.bind("mousedown", linker.handlerDown);
+        inElement.bind("touchstart", linker.handlerDown);
     };
     return obj;
 }]);
