@@ -31,7 +31,6 @@ angular.module("ngDrag", [])
 
     obj.link = function(inScope, inElement, inAttributes)
     {
-
         var minH = $parse(inAttributes.ngDragHMin)(inScope) || 0;
         var maxH = $parse(inAttributes.ngDragHMax)(inScope) || 1;
         var minV = $parse(inAttributes.ngDragVMin)(inScope) || 0;

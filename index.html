@@ -14,8 +14,8 @@
     </head>
     <body>
         <div ng-app="App" ng-controller="Controller" ng-cloak>
-            <div class="Slider Interactive" ng-drag ng-drag-handler="MouseDrag" ng-drag-h-max="IterationsMax">
-                <div class="Bar" style="width:{{Lerp.Get(0, Iterations, IterationsMax)*100;}}%;"></div>
+            <div class="Slider Interactive" ng-drag ng-drag-handler="MouseDrag">
+                <div class="Bar" style="width:{{Volume.value}}%;"></div>
             </div>
             <span>{{Iterations}}</span>
         </div>
@@ -46,7 +46,7 @@
         },
         Start: function()
         {
-            Tone.Time.Timer = setInterval(Tone.Time.Update, 150);
+            Tone.Time.Timer = setInterval(Tone.Time.Update, 120);
         },
         Stop: function()
         {
@@ -64,11 +64,12 @@
     Tone.Oscillator.frequency.value = 250;
     Tone.Oscillator.start();
 
-    Tone.Oscillator.connect(Tone.GainBeep);
+    Tone.Oscillator.connect(Tone.GainDB);
+    Tone.GainDB.connect(Tone.GainBeep);
     Tone.GainBeep.connect(Tone.Panner);
     Tone.Panner.connect(Tone.Context.destination);
 
-    //Tone.Time.Start();
+    Tone.Time.Start();
 
 </script>
 
@@ -78,10 +79,10 @@
             .controller("Controller", ["$scope", "Lerp", function($scope, Lerp)
             {
                 $scope.Lerp = Lerp;
-                $scope.Iterations = 5;
-                $scope.IterationsMax = 50;
-                $scope.MouseDrag = function(){
-                    $scope.Iterations = Math.floor($scope.Iterations);
+                $scope.Volume = Tone.GainDB.gain;
+                $scope.MouseDrag = function(inPos)
+                {
+                    $scope.Volume.value = inPos.x;
                 };
             }]);
         </script>
