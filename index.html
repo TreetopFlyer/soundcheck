@@ -9,120 +9,156 @@
         <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js"></script>
         <script src="ngDrag.js"></script>
 
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
         <link rel="stylesheet" href="styles.css">
     </head>
     <body>
 
+        
+
         <div ng-app="App" ng-controller="Controller" ng-cloak>
 
-            <div class="Slider Interactive"
-            ng-repeat=""
+            <div class="Test"
+            ng-class="{'Active':Test.Active}"
+            ng-repeat="Test in Tests track by $index"
             ng-drag
-            ng-drag-move="MouseDrag"
-            ng-drag-start="MouseStart"
-            ng-drag-stop="MouseStop">
-                <div class="Bar" style="width:{{Volume.value*100}}%;"></div>
+            ng-drag-move="Test.HandlerDrag"
+            ng-drag-start="Test.HandlerStart"
+            ng-drag-stop="Test.HandlerStop">
+
+                <dl>
+                    <dt>Frequency</dt>
+                    <dd ng-bind="Test.Frequency"></dd>
+                    <dt>Volume</dt>
+                    <dd ng-bind="Test.DB"></dd>
+                    <dt>Channel</dt>
+                    <dd ng-show="Test.Pan < 0">Left</dd>
+                    <dd ng-hide="Test.Pan < 0">Right</dd>
+                </dl>
+            
+                <div class="Slider Interactive ">
+                    <div class="Bar" style="width:{{Test.DB*100}}%;"></div>
+                </div>
+            
             </div>
 
-            <div class="Slider Interactive" ng-drag ng-drag-move="MouseDrag" ng-drag-start="MouseStart" ng-drag-stop="MouseStop">
-                <div class="Bar" style="width:{{Volume.value*100}}%;"></div>
-            </div>
-            <div class="Slider Interactive" ng-drag ng-drag-move="MouseDrag" ng-drag-start="MouseStart" ng-drag-stop="MouseStop">
-                <div class="Bar" style="width:{{Volume.value*100}}%;"></div>
-            </div>
             <span>{{Iterations}}</span>
         </div>
 
 <script>
 
-    var Tone = {};
-    Tone.Context = new (window.AudioContext || window.webkitAudioContext)();
 
-    Tone.Time = {
-        Timer:0,
-        Counter:0,
-        Update: function()
-        {
-            switch(Tone.Time.Counter)
-            {
-                case 0:
-                    Tone.GainBeep.gain.value = 1;
-                    break;
-                case 1:
-                    Tone.GainBeep.gain.value = 0;
-                    break;
-                default:
-                    Tone.Time.Counter = -1;
-            }
-            Tone.Time.Counter++;
-        },
-        Reset: function()
-        {
-            Tone.GainBeep.gain.value = 0;
-            Tone.Time.Counter = 0;
-        },
-        Start: function()
-        {
-            Tone.Time.Reset();
-            Tone.Time.Timer = setInterval(Tone.Time.Update, 120);
-        },
-        Stop: function()
-        {
-            clearInterval(Tone.Time.Timer);
-            Tone.Time.Reset();
-        }
-    };
-
-    Tone.GainBeep = Tone.Context.createGain();
-    Tone.GainBeep.gain.value = 0;
-    Tone.GainDB = Tone.Context.createGain();
-    Tone.GainDB.gain.value = 1;
-    Tone.Panner = Tone.Context.createStereoPanner();
-    Tone.Panner.pan.value = 0;
-    Tone.Oscillator = Tone.Context.createOscillator();
-    Tone.Oscillator.frequency.value = 250;
-    Tone.Oscillator.start();
-
-    Tone.Oscillator.connect(Tone.GainDB);
-    Tone.GainDB.connect(Tone.GainBeep);
-    Tone.GainBeep.connect(Tone.Panner);
-    Tone.Panner.connect(Tone.Context.destination);
 
 </script>
 
         <script>
             angular
             .module("App", ["ngDrag"])
-            .controller("Controller", ["$scope", "Lerp", function($scope, Lerp)
+            .factory("Tone", [function()
             {
+                var Tone = {};
+                Tone.Context = new (window.AudioContext || window.webkitAudioContext)();
+                Tone.Time = {
+                    Timer:0,
+                    Counter:0,
+                    Update: function()
+                    {
+                        switch(Tone.Time.Counter)
+                        {
+                            case 0:
+                                Tone.GainBeep.gain.value = 1;
+                                break;
+                            case 1:
+                                Tone.GainBeep.gain.value = 0;
+                                break;
+                            default:
+                                Tone.Time.Counter = -1;
+                        }
+                        Tone.Time.Counter++;
+                    },
+                    Reset: function()
+                    {
+                        Tone.GainBeep.gain.value = 0;
+                        Tone.Time.Counter = 0;
+                    },
+                    Start: function()
+                    {
+                        Tone.Time.Reset();
+                        Tone.Time.Timer = setInterval(Tone.Time.Update, 100);
+                    },
+                    Stop: function()
+                    {
+                        clearInterval(Tone.Time.Timer);
+                        Tone.Time.Reset();
+                    }
+                };
 
+                Tone.GainBeep = Tone.Context.createGain();
+                Tone.GainBeep.gain.value = 0;
+                Tone.GainDB = Tone.Context.createGain();
+                Tone.GainDB.gain.value = 1;
+                Tone.Panner = Tone.Context.createStereoPanner();
+                Tone.Panner.pan.value = 0;
+                Tone.Oscillator = Tone.Context.createOscillator();
+                Tone.Oscillator.frequency.value = 250;
+                Tone.Oscillator.start();
+
+                Tone.Oscillator.connect(Tone.GainDB);
+                Tone.GainDB.connect(Tone.GainBeep);
+                Tone.GainBeep.connect(Tone.Panner);
+                Tone.Panner.connect(Tone.Context.destination);
+
+                Tone.Setup = function(inFrequency, inPan, inDB)
+                {
+                    Tone.Oscillator.frequency.value = inFrequency;
+                    Tone.Panner.pan.value = inPan;
+                    Tone.GainDB.gain.value = inDB;
+                };
+
+                return Tone;
+            }])
+            .factory("Test", ["Tone", function(Tone)
+            {
+                var obj = {};
+                obj.Create = function(inFrequency, inPan, inDB)
+                {
+                    var test = {
+                        Frequency:inFrequency,
+                        Pan:inPan,
+                        DB:inDB,
+                        Active: false,
+                        Initialized: false
+                    };
+
+                    test.HandlerDrag = function(inPos)
+                    {
+                        test.DB = (Math.ceil(inPos.x*20))/20;
+                        Tone.Setup(test.Frequency, test.Pan, test.DB);
+                    };
+                    test.HandlerStart = function()
+                    {
+                        test.Initialized = true;
+                        Tone.Setup(test.Frequency, test.Pan, test.DB);
+                        Tone.Time.Start();
+                        test.Active = true;
+                    };
+                    test.HandlerStop = function()
+                    {
+                        Tone.Time.Stop();
+                        test.Active = false;
+                    };
+
+                    return test;
+                };
+                return obj;
+            }])
+            .controller("Controller", ["$scope", "Test", function($scope, Test)
+            {
                 $scope.Tests = [];
-                $scope.Tests.push({
-                    Frequency:4000,
-                    Pan:1,
-                    Db:0.5
-                });
-                $scope.Tests.push({
-                    Frequency:250,
-                    Pan:-1,
-                    Db:0.5
-                });
-
-                $scope.Lerp = Lerp;
-                $scope.Volume = Tone.GainDB.gain;
-                $scope.MouseDrag = function(inPos)
-                {
-                    $scope.Volume.value = inPos.x;
-                };
-                $scope.MouseStart = function()
-                {
-                    Tone.Time.Start();
-                };
-                $scope.MouseStop = function()
-                {
-                    Tone.Time.Stop();
-                };
+                $scope.Tests.push(Test.Create(4000, 1, 0.5));
+                $scope.Tests.push(Test.Create(4000, -1, 0.5));
+                $scope.Tests.push(Test.Create(250, 1, 0.5));
+                $scope.Tests.push(Test.Create(250, -1, 0.5));
             }]);
         </script>
     </body>
