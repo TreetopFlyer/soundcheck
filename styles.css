@@ -1,7 +1,9 @@
 .Slider
 {
     position:relative;
-    height:50px;
+    displaY:block;
+    cleaR:both;
+    height:20px;
     background:#eee;
 }
 .Slider .Bar
@@ -15,4 +17,45 @@
 .Test.Active .Slider .Bar
 {
     background:#F00;
+}
+.Test dl
+{
+    overflow:hidden;
+}
+.Test dd, .Test dt
+{
+    float:left;
+}
+.Test dd
+{
+    margin-right:1rem;
+    margin-left:0.5rem;
+}
+
+@keyframes animatedBackground
+{
+	from { background-position: 0 center; }
+	to { background-position: 50px center; }
+}
+.Icon
+{
+    display:block;
+    float:left;
+    width:50px;
+    height:50px;
+    border:1px solid #000;
+    border-radius:50px;
+    background:url(WaveLow.png) repeat-x left center;
+}
+.Icon.Right
+{
+    float:right;
+}
+.Icon.High
+{
+    background-image:url(WaveHigh.png);
+}
+.Test.Active .Icon
+{
+    animation: animatedBackground 1s linear infinite;
 }

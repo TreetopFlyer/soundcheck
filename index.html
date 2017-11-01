@@ -20,23 +20,16 @@
 
             <div class="Test"
             ng-class="{'Active':Test.Active}"
-            ng-repeat="Test in Tests track by $index"
-            ng-drag
-            ng-drag-move="Test.HandlerDrag"
-            ng-drag-start="Test.HandlerStart"
-            ng-drag-stop="Test.HandlerStop">
+            ng-repeat="Test in Tests track by $index">
 
-                <dl>
-                    <dt>Frequency</dt>
-                    <dd ng-bind="Test.Frequency"></dd>
-                    <dt>Volume</dt>
-                    <dd ng-bind="Test.DB"></dd>
-                    <dt>Channel</dt>
-                    <dd ng-show="Test.Pan < 0">Left</dd>
-                    <dd ng-hide="Test.Pan < 0">Right</dd>
-                </dl>
-            
-                <div class="Slider Interactive ">
+
+                <div class="Icon High" ng-class="{'Right':(Test.Pan < 0), 'High':(Test.Frequency>1000)}"></div>
+
+                <div class="Slider Interactive"
+                ng-drag
+                ng-drag-move="Test.HandlerDrag"
+                ng-drag-start="Test.HandlerStart"
+                ng-drag-stop="Test.HandlerStop">
                     <div class="Bar" style="width:{{Test.DB*100}}%;"></div>
                 </div>
             
