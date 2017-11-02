@@ -91,6 +91,7 @@ angular.module("ngDrag", [])
             if(handlerStart)
             {
                 handlerStart($event);
+                inScope.$apply();
             }
         };
 

@@ -1,10 +1,16 @@
+body
+{
+    background:#ddd;
+}
 .Slider
 {
     position:relative;
-    displaY:block;
-    cleaR:both;
-    height:30px;
+    display:block;
+    clear:both;
+    height:20px;
     background:#eee;
+    overflow:hidden;
+    border-radius:5px;
 }
 .Slider .Bar
 {
@@ -16,10 +22,11 @@
 }
 .Test
 {
-    padding:1rem;
+    padding:0.3rem;
     margin:2rem 1rem 3rem 1rem;
-    background:#3ddcce;
-    border-radius:10px;
+    background:#fff;
+    border-radius:8px;
+    box-shadow:0px 2px 5px #ddd;
 }
 .Test.Active .Slider .Bar
 {
@@ -34,12 +41,12 @@
 {
     display:block;
     float:left;
-    width:50px;
-    height:50px;
-    border:3px solid #3ddcce;
+    width:30px;
+    height:30px;
+    border:3px solid #0e8a74;
     border-radius:50px;
-    margin-top:-3rem;
-    margin-bottom:1rem;
+    margin-top:-2rem;
+    margin-bottom:0.3rem;
     background:#fff url(WaveLow.png) repeat-x left center;
 }
 .Icon.Right
