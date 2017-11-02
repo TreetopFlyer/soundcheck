@@ -86,13 +86,12 @@ angular.module("ngDrag", [])
             $document.bind("touchmove", linker.handlerMove);
             $document.bind("touchend", linker.handlerUp);
 
-            linker.handlerMove($event);
-
             if(handlerStart)
             {
                 handlerStart($event);
                 inScope.$apply();
             }
+            linker.handlerMove($event);
         };
 
         linker.handlerUp = function($event)

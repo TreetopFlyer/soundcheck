@@ -85,26 +85,29 @@
                     }
                 };
 
-                Tone.GainBeep = Tone.Context.createGain();
-                Tone.GainBeep.gain.value = 0;
-                Tone.GainDB = Tone.Context.createGain();
-                Tone.GainDB.gain.value = 1;
-                Tone.Panner = Tone.Context.createStereoPanner();
-                Tone.Panner.pan.value = 0;
-                Tone.Oscillator = Tone.Context.createOscillator();
-                Tone.Oscillator.frequency.value = 250;
-                Tone.Oscillator.start();
 
-                Tone.Oscillator.connect(Tone.GainDB);
-                Tone.GainDB.connect(Tone.GainBeep);
-                Tone.GainBeep.connect(Tone.Panner);
-                Tone.Panner.connect(Tone.Context.destination);
 
                 Tone.Setup = function(inFrequency, inPan, inDB)
                 {
+                    Tone.GainBeep = Tone.Context.createGain();
+                    Tone.GainBeep.gain.value = 0;
+                    Tone.GainDB = Tone.Context.createGain();
+                    Tone.Panner = Tone.Context.createStereoPanner();
+                    Tone.Oscillator = Tone.Context.createOscillator();
+                    Tone.Oscillator.start();
+
+                    Tone.Oscillator.connect(Tone.GainDB);
+                    Tone.GainDB.connect(Tone.GainBeep);
+                    Tone.GainBeep.connect(Tone.Panner);
+                    Tone.Panner.connect(Tone.Context.destination);
+
                     Tone.Oscillator.frequency.value = inFrequency;
                     Tone.Panner.pan.value = inPan;
-                    Tone.GainDB.gain.value = inDB*0.015;
+                    Tone.Fade(inDB);
+                };
+                Tone.Fade = function(inDB)
+                {
+                    Tone.GainDB.gain.value = inDB*0.01;
                 };
 
                 return Tone;
@@ -125,7 +128,7 @@
                     test.HandlerDrag = function(inPos)
                     {
                         test.DB = (Math.ceil(inPos.x*20))/20;
-                        Tone.Setup(test.Frequency, test.Pan, test.DB);
+                        Tone.Fade(test.DB);
                     };
                     test.HandlerStart = function()
                     {
